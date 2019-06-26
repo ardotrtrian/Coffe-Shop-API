@@ -22,7 +22,18 @@ namespace CoffeShopAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var menus = _db.Menus.Include(menu=>menu.SubMenus);
+            var menus = _db.Menus.Include(m => m.SubMenus);  //include("SubMenus") //Eager Loading
+            return Ok(menus);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetMenu(int id)
+        {
+            var menus = _db.Menus.Include(m => m.SubMenus).FirstOrDefault(m => m.Id == id);  //var menus = _db.Menus.Include("SubMenus").FirstOrDefault(m=>m.Id == id);
+            if (menus == null)
+            {
+                return NotFound("No records found against the Id!");
+            }
             return Ok(menus);
         }
     }
