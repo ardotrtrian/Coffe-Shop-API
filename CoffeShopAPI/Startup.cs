@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeShopAPI.BLL;
+using CoffeShopAPI.DAL;
+using CoffeShopAPI.DAL.Interfaces;
 using CoffeShopAPI.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +31,18 @@ namespace CoffeShopAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<EspressoDbContext>(option => option.UseSqlServer(Configuration["ConnectionString:DefaultConnection"]));  //Connection
+
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<EspressoDbContext>();
+
+            dbContextOptionsBuilder.UseSqlServer(Configuration["ConnectionString:DefaultConnection"]);
+
+            services.AddSingleton(provider => new EspressoDbContext(dbContextOptionsBuilder.Options));
+
+            services.AddSingleton<IMenu, MenuDAL>();
+            services.AddSingleton<MenuBLL>();
+
+            services.AddSingleton<IReservation, ReservationDal>();
+            services.AddSingleton<ReservationBLL>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CoffeShopAPI.BLL;
+using CoffeShopAPI.BLL.Models;
 using CoffeShopAPI.Data;
 using CoffeShopAPI.Models;
 using Microsoft.AspNetCore.Http;
@@ -13,19 +11,33 @@ namespace CoffeShopAPI.Controllers
     [ApiController]
     public class ReservationController : ControllerBase
     {
-        private EspressoDbContext _db;
+        private ReservationBLL reservationBLL;
 
-        public ReservationController(EspressoDbContext espressoDbContext)
+        public ReservationController(ReservationBLL reservationBLL)
         {
-            _db = espressoDbContext;
+           this.reservationBLL = reservationBLL;
         }
 
         [HttpPost]
-        public IActionResult Post(Reservation reservation)
+        public IActionResult Post([FromBody]Reservation reservation)
         {
-            _db.Reservations.Add(reservation);
-            _db.SaveChanges();
-            return StatusCode(StatusCodes.Status201Created);
+            var reserve = new ReservationModel()
+            {
+                Name = reservation.Name,
+                Date = reservation.Date,
+                Email = reservation.Email,
+                Phone = reservation.Phone,
+                Time = reservation.Time,
+                TotalPeople = reservation.TotalPeople
+            };
+
+            bool result = reservationBLL.CreateReservation(reserve);
+
+            if (result)
+            {
+                return StatusCode(StatusCodes.Status201Created);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest);
         }
     }
 }

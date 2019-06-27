@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeShopAPI.BLL;
 using CoffeShopAPI.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,28 +14,28 @@ namespace CoffeShopAPI.Controllers
     [ApiController]
     public class MenuController : ControllerBase
     {
-        private EspressoDbContext _db;
-        public MenuController(EspressoDbContext espressoDbContext)
+        private MenuBLL menuBLL;
+        public MenuController(MenuBLL menuBLL)
         {
-            _db = espressoDbContext;
+            this.menuBLL = menuBLL;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var menus = _db.Menus.Include(m => m.SubMenus);  //include("SubMenus") //Eager Loading
+            var menus = menuBLL.GetAllMenus();
             return Ok(menus);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetMenu(int id)
         {
-            var menus = _db.Menus.Include(m => m.SubMenus).FirstOrDefault(m => m.Id == id);  //var menus = _db.Menus.Include("SubMenus").FirstOrDefault(m=>m.Id == id);
-            if (menus == null)
+            var menu = menuBLL.GetMenuById(id);
+            if (menu == null)
             {
                 return NotFound("No records found against the Id!");
             }
-            return Ok(menus);
+            return Ok(menu);
         }
     }
 }
