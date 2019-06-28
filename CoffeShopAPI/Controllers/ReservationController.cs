@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeShopAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ReservationController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace CoffeShopAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]Reservation reservation)
+        public IActionResult CreateReservation([FromBody]Reservation reservation)
         {
             var reserve = new ReservationModel()
             {
